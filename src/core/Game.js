@@ -41,6 +41,11 @@ export class Game {
     this.lastJumpTime = 0;
     this.backgroundOffset = 0;
 
+    // Loading state
+    this.loadingProgress = 0;
+    this.loadingComplete = false;
+    this.loadingStartTime = Date.now();
+
     // Initialize
     this.init();
   }
@@ -48,30 +53,82 @@ export class Game {
   init() {
     console.log('Initializing game...');
 
-    // Create player
-    this.player = new Player(
-      GameConfig.PLAYER.START_X,
-      GameConfig.GROUND_Y - GameConfig.PLAYER.HEIGHT
-    );
-    this.physics.addEntity(this.player);
+    try {
+      // Set initial state to LOADING
+      this.gameState.setState(GameConfig.STATES.LOADING);
 
-    // Set up input handlers
-    this.setupInput();
+      // Start game loop immediately to show loading screen
+      this.gameLoop.start();
 
-    // Set initial state
-    this.gameState.setState(GameConfig.STATES.MENU);
+      // Force an initial render to show loading screen
+      this.render();
 
-    // Hide loading screen immediately - don't wait for voice
-    this.hideLoadingScreen();
+      // Initialize game components asynchronously
+      this.initializeGameAsync();
+    } catch (error) {
+      console.error('Error during game initialization:', error);
+      // Try to render a failsafe error message on canvas
+      this.renderFailsafe(error);
+      throw error; // Re-throw to be caught by main.js
+    }
+  }
 
-    // Start game loop
-    this.gameLoop.start();
+  async initializeGameAsync() {
+    try {
+      // Step 1: Create player
+      this.loadingProgress = 20;
+      await this.delay(100);
 
-    console.log('Game initialized successfully');
+      this.player = new Player(
+        GameConfig.PLAYER.START_X,
+        GameConfig.GROUND_Y - GameConfig.PLAYER.HEIGHT
+      );
+      this.physics.addEntity(this.player);
+      console.log('✓ Player created');
 
-    // Try to initialize voice controller in background (non-blocking)
-    // This allows the game to start even if user doesn't grant mic permission
-    this.initializeVoiceAsync();
+      // Step 2: Set up input handlers
+      this.loadingProgress = 40;
+      await this.delay(100);
+
+      this.setupInput();
+      console.log('✓ Input handlers configured');
+
+      // Step 3: Initialize voice controller (with timeout)
+      this.loadingProgress = 60;
+      await this.delay(100);
+
+      await this.initializeVoiceAsync();
+      console.log('✓ Voice controller initialized');
+
+      // Step 4: Final preparations
+      this.loadingProgress = 80;
+      await this.delay(100);
+
+      console.log('✓ Game systems ready');
+
+      // Step 5: Complete loading
+      this.loadingProgress = 100;
+      await this.delay(300);
+
+      // Mark loading as complete
+      this.loadingComplete = true;
+
+      // Hide HTML loading screen
+      this.hideLoadingScreen();
+
+      // Transition to menu
+      this.gameState.setState(GameConfig.STATES.MENU);
+
+      console.log('Game initialized successfully - Ready to play!');
+    } catch (error) {
+      console.error('Error during async initialization:', error);
+      this.renderFailsafe(error);
+      throw error;
+    }
+  }
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async initializeVoiceAsync() {
@@ -202,6 +259,10 @@ export class Game {
 
     // Update based on current state
     switch (state) {
+      case GameConfig.STATES.LOADING:
+        this.updateLoading(deltaTime);
+        break;
+
       case GameConfig.STATES.MENU:
         this.updateMenu(deltaTime);
         break;
@@ -227,6 +288,11 @@ export class Game {
 
     // Background scrolling
     this.backgroundOffset += deltaTime * 50;
+  }
+
+  updateLoading(deltaTime) {
+    // Loading screen is managed by async initialization
+    // Just keep the render loop going
   }
 
   updateMenu(deltaTime) {
@@ -344,7 +410,9 @@ export class Game {
 
     const state = this.gameState.getState();
 
-    if (state === GameConfig.STATES.MENU) {
+    if (state === GameConfig.STATES.LOADING) {
+      this.uiManager.renderLoading(this.loadingProgress);
+    } else if (state === GameConfig.STATES.MENU) {
       this.uiManager.renderMainMenu(this.renderer.ctx);
     } else if (state === GameConfig.STATES.PLAYING || state === GameConfig.STATES.PAUSED) {
       // Render obstacles
@@ -420,5 +488,29 @@ export class Game {
   hideLoadingScreen() {
     // No loading screen to hide - removed entirely
     console.log('Game ready to play');
+  }
+
+  renderFailsafe(error) {
+    // Render a simple error message directly on the canvas
+    try {
+      const ctx = this.renderer.ctx;
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      ctx.fillStyle = '#FF0000';
+      ctx.font = '20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Game Initialization Error', this.canvas.width / 2, this.canvas.height / 2 - 40);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '14px Arial';
+      ctx.fillText(error.message || 'Unknown error', this.canvas.width / 2, this.canvas.height / 2);
+
+      ctx.font = '12px Arial';
+      ctx.fillStyle = '#888888';
+      ctx.fillText('Check console for details', this.canvas.width / 2, this.canvas.height / 2 + 40);
+    } catch (renderError) {
+      console.error('Failed to render failsafe error:', renderError);
+    }
   }
 }
