@@ -451,7 +451,7 @@ export class Game {
   }
 
   renderDebug() {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       this.renderer.renderText(
         `FPS: ${this.gameLoop.getFPS()}`,
         this.renderer.canvas.width - 100,
