@@ -451,12 +451,8 @@ export class Game {
   }
 
   renderDebug() {
-    // Check if process exists (Node.js environment) before accessing it
-    const isDevelopment = typeof process !== 'undefined' &&
-                         process.env &&
-                         process.env.NODE_ENV === 'development';
-
-    if (isDevelopment) {
+    // Use Vite's import.meta.env for environment variables
+    if (import.meta.env.DEV) {
       this.renderer.renderText(
         `FPS: ${this.gameLoop.getFPS()}`,
         this.renderer.canvas.width - 100,
