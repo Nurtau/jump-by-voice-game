@@ -14,7 +14,10 @@ export const GameConfig = {
     HEIGHT: 60,
     RUN_SPEED: 300,
     START_X: 200,
-    JUMP_POWERS: [0, 400, 600, 800, 1000], // Jump strengths 0-4
+    BASE_JUMP_VELOCITY: 200, // Initial jump velocity
+    JUMP_POWERS: [0, 400, 600, 800, 1000], // Jump strengths 0-4 (legacy, kept for reference)
+    VOICE_BOOST_POWERS: [0, 8, 16, 24, 32], // Continuous boost powers per frame for strength 0-4
+    MAX_JUMP_VELOCITY: 1200, // Maximum upward velocity
     MAX_FALL_SPEED: 1200
   },
 

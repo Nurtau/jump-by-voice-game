@@ -21,9 +21,10 @@ export class Player extends Entity {
     this.invincibleTime = 0;
   }
 
-  jump(strength) {
-    if (this.isGrounded && this.canJump && strength > 0) {
-      this.velocity.y = -this.jumpPowers[strength];
+  jump() {
+    if (this.isGrounded && this.canJump) {
+      // Start with a small base jump velocity
+      this.velocity.y = -GameConfig.PLAYER.BASE_JUMP_VELOCITY;
       this.isJumping = true;
       this.isGrounded = false;
       this.animationState = 'jumping';
@@ -37,6 +38,25 @@ export class Player extends Entity {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Apply voice boost while ascending
+   * @param {number} strength - Jump strength (0-4) based on voice volume
+   */
+  applyVoiceBoost(strength) {
+    // Only apply boost while ascending (negative velocity = going up)
+    if (this.isJumping && this.velocity.y < 0 && strength > 0) {
+      // Apply upward acceleration based on voice strength
+      const boostPower = GameConfig.PLAYER.VOICE_BOOST_POWERS[strength];
+      this.velocity.y -= boostPower;
+
+      // Cap maximum upward velocity to prevent infinite boost
+      const maxUpwardVelocity = -GameConfig.PLAYER.MAX_JUMP_VELOCITY;
+      if (this.velocity.y < maxUpwardVelocity) {
+        this.velocity.y = maxUpwardVelocity;
+      }
+    }
   }
 
   onLand() {
