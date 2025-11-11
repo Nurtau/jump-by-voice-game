@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/jump-by-voice-game/',
   server: {
     port: 5173,
     open: true
@@ -8,7 +9,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    minify: 'terser',
+    minify: 'esbuild',
     sourcemap: false
   }
 });
