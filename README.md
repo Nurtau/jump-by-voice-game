@@ -25,7 +25,9 @@ Run automatically from left to right and use your voice to jump over obstacles:
 ## 🎬 Quick Start
 
 ### Play Online
-Visit [Game URL will be here after deployment]
+🎮 **Play now**: [https://Nurtau.github.io/jump-by-voice-game/](https://Nurtau.github.io/jump-by-voice-game/)
+
+> **Note**: Grant microphone permission when prompted for voice control to work!
 
 ### Run Locally
 
@@ -182,6 +184,26 @@ npm run build
 # Files will be in /dist folder
 # Deploy the /dist folder to your hosting provider
 ```
+
+### Deploying to GitHub Pages
+
+The game is configured for automatic deployment to GitHub Pages:
+
+1. **Enable GitHub Pages** in repository settings:
+   - Go to Settings > Pages
+   - Source: Select "GitHub Actions"
+
+2. **Push to main branch** (or use the workflow dispatch):
+   ```bash
+   git push origin main
+   ```
+
+3. **Automatic deployment** will start via GitHub Actions
+
+4. **Access your game** at:
+   - `https://[username].github.io/jump-by-voice-game/`
+
+For detailed deployment instructions, see [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 
 ## 🎨 Asset Creation
 
