@@ -451,7 +451,12 @@ export class Game {
   }
 
   renderDebug() {
-    if (process.env.NODE_ENV === 'development') {
+    // Check if process exists (Node.js environment) before accessing it
+    const isDevelopment = typeof process !== 'undefined' &&
+                         process.env &&
+                         process.env.NODE_ENV === 'development';
+
+    if (isDevelopment) {
       this.renderer.renderText(
         `FPS: ${this.gameLoop.getFPS()}`,
         this.renderer.canvas.width - 100,
