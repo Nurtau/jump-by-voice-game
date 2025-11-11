@@ -451,7 +451,8 @@ export class Game {
   }
 
   renderDebug() {
-    if (process.env.NODE_ENV === 'development') {
+    // Use Vite's import.meta.env for environment variables
+    if (import.meta.env.DEV) {
       this.renderer.renderText(
         `FPS: ${this.gameLoop.getFPS()}`,
         this.renderer.canvas.width - 100,
