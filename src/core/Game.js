@@ -45,7 +45,7 @@ export class Game {
     this.init();
   }
 
-  async init() {
+  init() {
     console.log('Initializing game...');
 
     // Create player
@@ -420,9 +420,11 @@ export class Game {
   hideLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     if (loadingScreen) {
-      setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-      }, 500);
+      // Hide immediately - no delay needed
+      loadingScreen.classList.add('hidden');
+      console.log('Loading screen hidden');
+    } else {
+      console.warn('Loading screen element not found');
     }
   }
 }
