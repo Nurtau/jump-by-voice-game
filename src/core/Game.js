@@ -48,30 +48,40 @@ export class Game {
   init() {
     console.log('Initializing game...');
 
-    // Create player
-    this.player = new Player(
-      GameConfig.PLAYER.START_X,
-      GameConfig.GROUND_Y - GameConfig.PLAYER.HEIGHT
-    );
-    this.physics.addEntity(this.player);
+    try {
+      // Create player
+      this.player = new Player(
+        GameConfig.PLAYER.START_X,
+        GameConfig.GROUND_Y - GameConfig.PLAYER.HEIGHT
+      );
+      this.physics.addEntity(this.player);
 
-    // Set up input handlers
-    this.setupInput();
+      // Set up input handlers
+      this.setupInput();
 
-    // Set initial state
-    this.gameState.setState(GameConfig.STATES.MENU);
+      // Set initial state
+      this.gameState.setState(GameConfig.STATES.MENU);
 
-    // Hide loading screen immediately - don't wait for voice
-    this.hideLoadingScreen();
+      // Hide loading screen immediately - don't wait for voice
+      this.hideLoadingScreen();
 
-    // Start game loop
-    this.gameLoop.start();
+      // Start game loop
+      this.gameLoop.start();
 
-    console.log('Game initialized successfully');
+      // Force an initial render to ensure something is visible
+      this.render();
 
-    // Try to initialize voice controller in background (non-blocking)
-    // This allows the game to start even if user doesn't grant mic permission
-    this.initializeVoiceAsync();
+      console.log('Game initialized successfully');
+
+      // Try to initialize voice controller in background (non-blocking)
+      // This allows the game to start even if user doesn't grant mic permission
+      this.initializeVoiceAsync();
+    } catch (error) {
+      console.error('Error during game initialization:', error);
+      // Try to render a failsafe error message on canvas
+      this.renderFailsafe(error);
+      throw error; // Re-throw to be caught by main.js
+    }
   }
 
   async initializeVoiceAsync() {
@@ -420,5 +430,29 @@ export class Game {
   hideLoadingScreen() {
     // No loading screen to hide - removed entirely
     console.log('Game ready to play');
+  }
+
+  renderFailsafe(error) {
+    // Render a simple error message directly on the canvas
+    try {
+      const ctx = this.renderer.ctx;
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      ctx.fillStyle = '#FF0000';
+      ctx.font = '20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Game Initialization Error', this.canvas.width / 2, this.canvas.height / 2 - 40);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '14px Arial';
+      ctx.fillText(error.message || 'Unknown error', this.canvas.width / 2, this.canvas.height / 2);
+
+      ctx.font = '12px Arial';
+      ctx.fillStyle = '#888888';
+      ctx.fillText('Check console for details', this.canvas.width / 2, this.canvas.height / 2 + 40);
+    } catch (renderError) {
+      console.error('Failed to render failsafe error:', renderError);
+    }
   }
 }
