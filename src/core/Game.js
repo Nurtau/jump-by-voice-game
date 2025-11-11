@@ -196,7 +196,19 @@ export class Game {
   }
 
   setupTouchControls() {
-    // Touch controls removed - use voice or spacebar only
+    // Touch controls for UI buttons (menu/restart) only
+    // Touch-to-jump is disabled - use voice or spacebar for jumping
+    this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+
+      const state = this.gameState.getState();
+      if (state === GameConfig.STATES.MENU) {
+        this.startGame();
+      } else if (state === GameConfig.STATES.GAME_OVER) {
+        this.restartGame();
+      }
+      // Note: Touch jumping is intentionally disabled for PLAYING state
+    });
   }
 
   update(deltaTime) {
