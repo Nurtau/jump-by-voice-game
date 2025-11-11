@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Voice Jump - Voice Controlled Platformer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +14,15 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
     }
 
     body {
@@ -19,21 +30,62 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       font-family: 'Press Start 2P', monospace;
-      overflow: hidden;
     }
 
     #gameContainer {
       position: relative;
       background: #000;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     #gameCanvas {
       display: block;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      touch-action: none;
+    }
+
+    /* Desktop: preserve aspect ratio with max width */
+    @media (min-width: 768px) {
+      #gameContainer {
+        width: auto;
+        height: auto;
+        max-width: 90vw;
+        max-height: 90vh;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      }
+
+      #gameCanvas {
+        width: 1280px;
+        height: 720px;
+        max-width: 90vw;
+        max-height: 90vh;
+      }
+    }
+
+    /* Mobile: fill screen */
+    @media (max-width: 767px) {
+      #gameCanvas {
+        width: 100vw !important;
+        height: 100vh !important;
+      }
+    }
+
+    /* Landscape mobile: adjust for notches */
+    @media (max-width: 767px) and (orientation: landscape) {
+      #gameCanvas {
+        width: 100vw !important;
+        height: 100vh !important;
+      }
     }
 
     #loadingScreen {
@@ -49,17 +101,19 @@
       align-items: center;
       color: white;
       z-index: 1000;
+      padding: 20px;
     }
 
     #loadingScreen h1 {
-      font-size: 32px;
-      margin-bottom: 40px;
+      font-size: clamp(16px, 5vw, 32px);
+      margin-bottom: clamp(20px, 5vh, 40px);
       text-shadow: 4px 4px 0 #000;
+      text-align: center;
     }
 
     #loadingBar {
-      width: 400px;
-      height: 40px;
+      width: min(400px, 80vw);
+      height: clamp(30px, 5vh, 40px);
       background: rgba(0, 0, 0, 0.3);
       border: 4px solid #fff;
       position: relative;
@@ -69,17 +123,23 @@
     #loadingProgress {
       height: 100%;
       background: linear-gradient(90deg, #7EC850, #90EE90);
-      width: 0%;
+      width: 100%;
       transition: width 0.3s;
     }
 
     #loadingText {
       margin-top: 20px;
-      font-size: 14px;
+      font-size: clamp(10px, 3vw, 14px);
+      text-align: center;
     }
 
     .hidden {
       display: none !important;
+    }
+
+    /* Prevent pull-to-refresh on mobile */
+    body {
+      overscroll-behavior-y: none;
     }
   </style>
 </head>
@@ -92,7 +152,7 @@
       <div id="loadingBar">
         <div id="loadingProgress"></div>
       </div>
-      <div id="loadingText">Loading...</div>
+      <div id="loadingText">Starting game...</div>
     </div>
   </div>
 

@@ -183,22 +183,22 @@ export class UIManager {
     this.renderer.renderText(
       '🎮 VOICE JUMP 🎮',
       width / 2,
-      150,
+      height * 0.25,
       { fontSize: 40, align: 'center', color: GameConfig.COLORS.GOLD }
     );
 
     // Instructions
     this.renderer.renderText(
-      'Use your voice to jump!',
+      'TAP & HOLD to jump!',
       width / 2,
-      250,
+      height * 0.4,
       { fontSize: 18, align: 'center' }
     );
 
     this.renderer.renderText(
-      'Louder = Higher Jump',
+      'Hold longer = Higher jump',
       width / 2,
-      290,
+      height * 0.45,
       { fontSize: 14, align: 'center' }
     );
 
@@ -206,18 +206,18 @@ export class UIManager {
     const blinkTime = Math.floor(Date.now() / 500) % 2;
     if (blinkTime === 0) {
       this.renderer.renderText(
-        'Press SPACE or make a sound to start!',
+        'TAP to start!',
         width / 2,
-        height - 150,
-        { fontSize: 16, align: 'center', color: GameConfig.COLORS.GOLD }
+        height * 0.7,
+        { fontSize: 20, align: 'center', color: GameConfig.COLORS.GOLD }
       );
     }
 
     // Alternative controls info
     this.renderer.renderText(
-      'Alternative: Use SPACEBAR to jump',
+      'Voice/Spacebar also work',
       width / 2,
-      height - 80,
+      height * 0.85,
       { fontSize: 10, align: 'center', color: '#AAAAAA' }
     );
   }
@@ -234,24 +234,24 @@ export class UIManager {
     this.renderer.renderText(
       '⏸️  PAUSED',
       width / 2,
-      height / 2 - 50,
+      height * 0.35,
       { fontSize: 36, align: 'center', color: GameConfig.COLORS.GOLD }
     );
 
     // Resume instruction
     this.renderer.renderText(
-      'Press ESC or P to resume',
+      'TAP to resume',
       width / 2,
-      height / 2 + 30,
+      height * 0.5,
       { fontSize: 18, align: 'center' }
     );
 
     // Restart instruction
     this.renderer.renderText(
-      'Press R to restart',
+      'ESC or P also resume',
       width / 2,
-      height / 2 + 70,
-      { fontSize: 14, align: 'center', color: '#AAAAAA' }
+      height * 0.6,
+      { fontSize: 12, align: 'center', color: '#AAAAAA' }
     );
   }
 
@@ -325,9 +325,9 @@ export class UIManager {
     const blinkTime = Math.floor(Date.now() / 500) % 2;
     if (blinkTime === 0) {
       this.renderer.renderText(
-        'Press R to try again!',
+        'TAP to try again!',
         width / 2,
-        height - 100,
+        height * 0.85,
         { fontSize: 18, align: 'center', color: GameConfig.COLORS.GOLD }
       );
     }

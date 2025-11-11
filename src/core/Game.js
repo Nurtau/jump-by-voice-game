@@ -58,25 +58,36 @@ export class Game {
     // Set up input handlers
     this.setupInput();
 
-    // Try to initialize voice controller
-    try {
-      this.voiceEnabled = await this.voiceController.initialize();
-      console.log('Voice control:', this.voiceEnabled ? 'enabled' : 'disabled');
-    } catch (error) {
-      console.warn('Voice control not available:', error);
-      this.voiceEnabled = false;
-    }
-
     // Set initial state
     this.gameState.setState(GameConfig.STATES.MENU);
 
-    // Hide loading screen
+    // Hide loading screen immediately - don't wait for voice
     this.hideLoadingScreen();
 
     // Start game loop
     this.gameLoop.start();
 
     console.log('Game initialized successfully');
+
+    // Try to initialize voice controller in background (non-blocking)
+    // This allows the game to start even if user doesn't grant mic permission
+    this.initializeVoiceAsync();
+  }
+
+  async initializeVoiceAsync() {
+    try {
+      // Add timeout to prevent hanging
+      const voicePromise = this.voiceController.initialize();
+      const timeoutPromise = new Promise((resolve) =>
+        setTimeout(() => resolve(false), 5000)
+      );
+
+      this.voiceEnabled = await Promise.race([voicePromise, timeoutPromise]);
+      console.log('Voice control:', this.voiceEnabled ? 'enabled' : 'disabled (use spacebar/touch)');
+    } catch (error) {
+      console.warn('Voice control not available:', error);
+      this.voiceEnabled = false;
+    }
   }
 
   setupInput() {
@@ -122,6 +133,68 @@ export class Game {
         spaceHoldTime += 1 / 60; // Assuming 60fps
       }
     };
+
+    // Touch controls for mobile
+    this.setupTouchControls();
+  }
+
+  setupTouchControls() {
+    let touchStartTime = 0;
+    let isTouching = false;
+
+    this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isTouching = true;
+      touchStartTime = Date.now();
+
+      const state = this.gameState.getState();
+      if (state === GameConfig.STATES.MENU) {
+        this.startGame();
+      } else if (state === GameConfig.STATES.GAME_OVER) {
+        this.restartGame();
+      }
+    });
+
+    this.canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+
+      if (this.gameState.isPlaying() && isTouching) {
+        const holdTime = (Date.now() - touchStartTime) / 1000;
+        // Calculate jump strength based on hold time
+        const strength = Math.min(4, Math.floor(holdTime / 0.15) + 1);
+        this.handleJump(strength);
+      }
+
+      isTouching = false;
+      touchStartTime = 0;
+    });
+
+    // Also handle mouse for desktop
+    let mouseStartTime = 0;
+    let isMouseDown = false;
+
+    this.canvas.addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      mouseStartTime = Date.now();
+
+      const state = this.gameState.getState();
+      if (state === GameConfig.STATES.MENU) {
+        this.startGame();
+      } else if (state === GameConfig.STATES.GAME_OVER) {
+        this.restartGame();
+      }
+    });
+
+    this.canvas.addEventListener('mouseup', (e) => {
+      if (this.gameState.isPlaying() && isMouseDown) {
+        const holdTime = (Date.now() - mouseStartTime) / 1000;
+        const strength = Math.min(4, Math.floor(holdTime / 0.15) + 1);
+        this.handleJump(strength);
+      }
+
+      isMouseDown = false;
+      mouseStartTime = 0;
+    });
   }
 
   update(deltaTime) {
