@@ -196,35 +196,7 @@ export class Game {
   }
 
   setupTouchControls() {
-    let touchStartTime = 0;
-    let isTouching = false;
-
-    this.canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      isTouching = true;
-      touchStartTime = Date.now();
-
-      const state = this.gameState.getState();
-      if (state === GameConfig.STATES.MENU) {
-        this.startGame();
-      } else if (state === GameConfig.STATES.GAME_OVER) {
-        this.restartGame();
-      }
-    });
-
-    this.canvas.addEventListener('touchend', (e) => {
-      e.preventDefault();
-
-      if (this.gameState.isPlaying() && isTouching) {
-        const holdTime = (Date.now() - touchStartTime) / 1000;
-        // Calculate jump strength based on hold time
-        const strength = Math.min(4, Math.floor(holdTime / 0.15) + 1);
-        this.handleJump(strength);
-      }
-
-      isTouching = false;
-      touchStartTime = 0;
-    });
+    // Touch controls removed - use voice or spacebar only
   }
 
   update(deltaTime) {
