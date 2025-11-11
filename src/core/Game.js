@@ -445,21 +445,6 @@ export class Game {
       // Render game over screen
       this.uiManager.renderGameOver(this.gameState, this.renderer.ctx);
     }
-
-    // Debug info (FPS)
-    this.renderDebug();
-  }
-
-  renderDebug() {
-    // Use Vite's import.meta.env for environment variables
-    if (import.meta.env.DEV) {
-      this.renderer.renderText(
-        `FPS: ${this.gameLoop.getFPS()}`,
-        this.renderer.canvas.width - 100,
-        10,
-        { fontSize: 10, align: 'right', color: '#00FF00' }
-      );
-    }
   }
 
   startGame() {
