@@ -70,8 +70,7 @@ The game requires microphone access to detect your voice
 
 #### Alternative Controls
 - **Spacebar** - Jump (hold for higher jump)
-- **Mouse Click** - Jump (hold for higher jump)
-- **Touch/Tap** - Jump (hold for higher jump)
+- **Touch/Tap** - Jump (hold for higher jump) - Mobile only
 
 #### General
 - **ESC** - Pause game

@@ -225,33 +225,6 @@ export class Game {
       isTouching = false;
       touchStartTime = 0;
     });
-
-    // Also handle mouse for desktop
-    let mouseStartTime = 0;
-    let isMouseDown = false;
-
-    this.canvas.addEventListener('mousedown', (e) => {
-      isMouseDown = true;
-      mouseStartTime = Date.now();
-
-      const state = this.gameState.getState();
-      if (state === GameConfig.STATES.MENU) {
-        this.startGame();
-      } else if (state === GameConfig.STATES.GAME_OVER) {
-        this.restartGame();
-      }
-    });
-
-    this.canvas.addEventListener('mouseup', (e) => {
-      if (this.gameState.isPlaying() && isMouseDown) {
-        const holdTime = (Date.now() - mouseStartTime) / 1000;
-        const strength = Math.min(4, Math.floor(holdTime / 0.15) + 1);
-        this.handleJump(strength);
-      }
-
-      isMouseDown = false;
-      mouseStartTime = 0;
-    });
   }
 
   update(deltaTime) {
