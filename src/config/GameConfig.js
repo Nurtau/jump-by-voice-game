@@ -24,10 +24,10 @@ export const GameConfig = {
     SENSITIVITY: 1.0,
     COOLDOWN: 100, // ms between jumps
     RANGES: {
-      WHISPER: 30,
-      NORMAL: 60,
-      LOUD: 85,
-      SHOUT: 100
+      WHISPER: 9,
+      NORMAL: 18,
+      LOUD: 25,
+      SHOUT: 30
     }
   },
 
