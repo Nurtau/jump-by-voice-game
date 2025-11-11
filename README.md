@@ -70,6 +70,7 @@ The game requires microphone access to detect your voice
 
 #### Alternative Controls
 - **Spacebar** - Jump (hold for higher jump)
+- **Touch/Tap** - Start game or restart (UI only, not for jumping)
 
 #### General
 - **ESC** - Pause game
