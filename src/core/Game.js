@@ -148,27 +148,15 @@ export class Game {
   }
 
   setupInput() {
-    // Space bar for jumping (alternative to voice)
-    let spaceHoldTime = 0;
-
+    // Space bar for menu/restart only (NOT for jumping)
     this.input.onKey('Space',
       () => {
         const state = this.gameState.getState();
 
         if (state === GameConfig.STATES.MENU) {
           this.startGame();
-        } else if (state === GameConfig.STATES.PLAYING) {
-          spaceHoldTime = 0;
         } else if (state === GameConfig.STATES.GAME_OVER) {
           this.restartGame();
-        }
-      },
-      () => {
-        if (this.gameState.isPlaying()) {
-          // Calculate jump strength based on hold time
-          const strength = Math.min(4, Math.floor(spaceHoldTime / 0.15) + 1);
-          this.handleJump(strength);
-          spaceHoldTime = 0;
         }
       }
     );
@@ -184,20 +172,13 @@ export class Game {
       }
     });
 
-    // Track space hold time
-    this.spaceHoldTimeTracker = () => {
-      if (this.input.isKeyPressed('Space') && this.gameState.isPlaying()) {
-        spaceHoldTime += 1 / 60; // Assuming 60fps
-      }
-    };
-
     // Touch controls for mobile
     this.setupTouchControls();
   }
 
   setupTouchControls() {
     // Touch controls for UI buttons (menu/restart) only
-    // Touch-to-jump is disabled - use voice or spacebar for jumping
+    // Touch-to-jump is disabled - use voice for jumping
     this.canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
 
@@ -207,7 +188,7 @@ export class Game {
       } else if (state === GameConfig.STATES.GAME_OVER) {
         this.restartGame();
       }
-      // Note: Touch jumping is intentionally disabled for PLAYING state
+      // Note: Touch and keyboard jumping are intentionally disabled for PLAYING state
     });
   }
 
@@ -263,19 +244,23 @@ export class Game {
   }
 
   updatePlaying(deltaTime) {
-    // Track space hold time
-    if (this.spaceHoldTimeTracker) {
-      this.spaceHoldTimeTracker();
-    }
-
     // Update player
     this.player.update(deltaTime);
 
-    // Check voice input for jumping
+    // Check voice input for jumping and boosting
     if (this.voiceEnabled) {
       const strength = this.voiceController.getJumpStrength();
+
+      // Initiate jump if on ground
       if (strength > 0 && Date.now() - this.lastJumpTime > GameConfig.VOICE.COOLDOWN) {
-        this.handleJump(strength);
+        if (this.player.isGrounded) {
+          this.handleJump();
+        }
+      }
+
+      // Apply continuous voice boost while ascending
+      if (this.player.isJumping && this.player.velocity.y < 0) {
+        this.player.applyVoiceBoost(strength);
       }
     }
 
@@ -319,8 +304,8 @@ export class Game {
     // Could add some effects here
   }
 
-  handleJump(strength) {
-    if (this.player.jump(strength)) {
+  handleJump() {
+    if (this.player.jump()) {
       this.lastJumpTime = Date.now();
       this.gameState.recordJump();
 
