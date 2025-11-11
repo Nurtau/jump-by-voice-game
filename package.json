@@ -1,0 +1,22 @@
+{
+  "name": "voice-jump-game",
+  "version": "1.0.0",
+  "description": "A voice-controlled endless runner platformer game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "game",
+    "voice-control",
+    "platformer",
+    "endless-runner"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
