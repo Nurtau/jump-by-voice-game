@@ -376,13 +376,76 @@ export class UIManager {
   renderLoading(progress) {
     const width = this.renderer.canvas.width;
     const height = this.renderer.canvas.height;
+    const ctx = this.renderer.ctx;
 
-    // This is handled in HTML, but we can add canvas overlay if needed
+    // Title
     this.renderer.renderText(
-      'Loading...',
+      '🎮 VOICE JUMP 🎮',
       width / 2,
-      height / 2,
-      { fontSize: 24, align: 'center' }
+      height * 0.35,
+      { fontSize: 32, align: 'center', color: GameConfig.COLORS.GOLD }
     );
+
+    // Loading text
+    const loadingText = progress < 100 ? 'Loading...' : 'Ready!';
+    this.renderer.renderText(
+      loadingText,
+      width / 2,
+      height * 0.5,
+      { fontSize: 20, align: 'center' }
+    );
+
+    // Progress bar
+    const barWidth = 400;
+    const barHeight = 30;
+    const barX = (width - barWidth) / 2;
+    const barY = height * 0.6;
+
+    // Background
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+
+    // Progress fill
+    const fillWidth = (barWidth - 4) * (progress / 100);
+    const gradient = ctx.createLinearGradient(barX + 2, barY, barX + barWidth - 2, barY);
+    gradient.addColorStop(0, '#4A90E2');
+    gradient.addColorStop(1, '#FFD700');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(barX + 2, barY + 2, fillWidth, barHeight - 4);
+
+    // Border
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+    // Percentage text
+    this.renderer.renderText(
+      `${Math.floor(progress)}%`,
+      width / 2,
+      barY + barHeight + 20,
+      { fontSize: 16, align: 'center', color: '#AAAAAA' }
+    );
+
+    ctx.restore();
+
+    // Loading hint
+    if (progress < 100) {
+      const hints = [
+        'Tip: Whisper for small jumps',
+        'Tip: Speak normally for medium jumps',
+        'Tip: Shout loudly for super jumps!',
+        'Tip: Chain jumps for combo bonuses'
+      ];
+      const hintIndex = Math.floor(progress / 25) % hints.length;
+
+      this.renderer.renderText(
+        hints[hintIndex],
+        width / 2,
+        height * 0.8,
+        { fontSize: 12, align: 'center', color: '#888888' }
+      );
+    }
   }
 }
